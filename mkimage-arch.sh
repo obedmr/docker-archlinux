@@ -123,4 +123,4 @@ rm -rf $ROOTFS
 
 date=`date +'%Y-%m-%d'`
 docker save -o archlinux-$date.tar archlinux 
-tar -cJf archlinux-$date.tar.xz archlinux-$date.tar
+xz -z archlinux-$date.tar
