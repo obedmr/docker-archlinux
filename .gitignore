@@ -35,6 +35,3 @@ tramp
 
 # cask packages
 .cask/
-
-# tars
-*.tar*

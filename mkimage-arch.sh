@@ -122,7 +122,7 @@ docker run --rm -t $DOCKER_IMAGE_NAME echo Success.
 rm -rf $ROOTFS
 
 date=`date +'%Y-%m-%d'`
-docker run -d --name base_archlinux $DOCKER_IMAGE_NAME bash
+docker run --name base_archlinux $DOCKER_IMAGE_NAME bash
 docker export -o archlinux-$date.tar base_archlinux
 docker rm base_archlinux
 xz -z archlinux-$date.tar
