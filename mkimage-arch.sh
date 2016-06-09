@@ -119,8 +119,8 @@ ln -sf /proc/self/fd $DEV/fd
 
 tar --numeric-owner --xattrs --acls -C $ROOTFS -c . | docker import - $DOCKER_IMAGE_NAME
 docker run --rm -t $DOCKER_IMAGE_NAME echo Success.
-rm -rf $ROOTFS
 
 date=`date +'%Y-%m-%d'`
-docker save -o archlinux-$date.tar archlinux 
+tar -cvf archlinux-$date.tar -C $ROOTFS .
 xz -z archlinux-$date.tar
+rm -rf $ROOTFS
