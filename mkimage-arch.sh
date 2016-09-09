@@ -3,6 +3,7 @@
 # docker as "archlinux"
 # requires root
 set -e
+set -x
 
 hash pacstrap &>/dev/null || {
 	echo "Could not find pacstrap. Run pacman -S arch-install-scripts"
@@ -32,7 +33,7 @@ PKGIGNORE=(
     man-db
     man-pages
     mdadm
-    nano
+    emacs-nox
     netctl
     openresolv
     pciutils
@@ -41,8 +42,9 @@ PKGIGNORE=(
     s-nail
     systemd-sysvcompat
     usbutils
-    vi
     xfsprogs
+    git
+    yaourt
 )
 IFS=','
 PKGIGNORE="${PKGIGNORE[*]}"
@@ -84,7 +86,7 @@ expect <<EOF
 	}
 	set timeout $EXPECT_TIMEOUT
 
-	spawn pacstrap -C $PACMAN_CONF -c -d -G -i $ROOTFS base haveged $PACMAN_EXTRA_PKGS --ignore $PKGIGNORE
+	spawn pacstrap -C $PACMAN_CONF -c -d -G -i $ROOTFS base base-devel haveged $PACMAN_EXTRA_PKGS --ignore $PKGIGNORE
 	expect {
 		-exact "anyway? \[Y/n\] " { send -- "n\r"; exp_continue }
 		-exact "(default=all): " { send -- "\r"; exp_continue }
@@ -122,7 +124,8 @@ docker run --rm -t $DOCKER_IMAGE_NAME echo Success.
 rm -rf $ROOTFS
 
 date=`date +'%Y-%m-%d'`
+docker rm -f base_archlinux
 docker run --name base_archlinux $DOCKER_IMAGE_NAME bash
 docker export -o archlinux-$date.tar base_archlinux
-docker rm base_archlinux
+docker rm -f base_archlinux
 xz -z archlinux-$date.tar
