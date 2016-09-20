@@ -33,7 +33,6 @@ PKGIGNORE=(
     man-db
     man-pages
     mdadm
-    emacs-nox
     netctl
     openresolv
     pciutils
@@ -43,8 +42,8 @@ PKGIGNORE=(
     systemd-sysvcompat
     usbutils
     xfsprogs
-    git
-    yaourt
+    vi
+    nano
 )
 IFS=','
 PKGIGNORE="${PKGIGNORE[*]}"
@@ -64,7 +63,7 @@ case "$(uname -m)" in
 		PACMAN_EXTRA_PKGS='archlinuxarm-keyring'
 		EXPECT_TIMEOUT=120
 		ARCH_KEYRING=archlinuxarm
-		DOCKER_IMAGE_NAME=archlinuxarm
+		DOCKER_IMAGE_NAME=obedmr/archlinux
 		;;
 	*)
 		PACMAN_CONF='./mkimage-arch-pacman.conf'
@@ -72,7 +71,7 @@ case "$(uname -m)" in
 		PACMAN_EXTRA_PKGS=''
 		EXPECT_TIMEOUT=60
 		ARCH_KEYRING=archlinux
-		DOCKER_IMAGE_NAME=archlinux
+		DOCKER_IMAGE_NAME=obedmr/archlinux
 		;;
 esac
 
@@ -86,7 +85,7 @@ expect <<EOF
 	}
 	set timeout $EXPECT_TIMEOUT
 
-	spawn pacstrap -C $PACMAN_CONF -c -d -G -i $ROOTFS base base-devel haveged $PACMAN_EXTRA_PKGS --ignore $PKGIGNORE
+	spawn pacstrap -C $PACMAN_CONF -c -d -G -i $ROOTFS base haveged git emacs-nox yaourt $PACMAN_EXTRA_PKGS --ignore $PKGIGNORE
 	expect {
 		-exact "anyway? \[Y/n\] " { send -- "n\r"; exp_continue }
 		-exact "(default=all): " { send -- "\r"; exp_continue }
@@ -123,8 +122,8 @@ tar --numeric-owner --xattrs --acls -C $ROOTFS -c . | docker import - $DOCKER_IM
 docker run --rm -t $DOCKER_IMAGE_NAME echo Success.
 rm -rf $ROOTFS
 
+
 date=`date +'%Y-%m-%d'`
-docker rm -f base_archlinux
 docker run --name base_archlinux $DOCKER_IMAGE_NAME bash
 docker export -o archlinux-$date.tar base_archlinux
 docker rm -f base_archlinux
