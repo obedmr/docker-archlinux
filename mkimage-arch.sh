@@ -63,7 +63,7 @@ case "$(uname -m)" in
 		PACMAN_EXTRA_PKGS='archlinuxarm-keyring'
 		EXPECT_TIMEOUT=120
 		ARCH_KEYRING=archlinuxarm
-		DOCKER_IMAGE_NAME=obedmr/archlinux
+		DOCKER_IMAGE_NAME=archlinuxarm
 		;;
 	*)
 		PACMAN_CONF='./mkimage-arch-pacman.conf'
@@ -71,7 +71,7 @@ case "$(uname -m)" in
 		PACMAN_EXTRA_PKGS=''
 		EXPECT_TIMEOUT=60
 		ARCH_KEYRING=archlinux
-		DOCKER_IMAGE_NAME=obedmr/archlinux
+		DOCKER_IMAGE_NAME=archlinux
 		;;
 esac
 
@@ -118,13 +118,11 @@ mknod -m 600 $DEV/initctl p
 mknod -m 666 $DEV/ptmx c 5 2
 ln -sf /proc/self/fd $DEV/fd
 
-tar --numeric-owner --xattrs --acls -C $ROOTFS -c . | docker import - $DOCKER_IMAGE_NAME
-docker run --rm -t $DOCKER_IMAGE_NAME echo Success.
+date=`date +'%Y-%m-%d'`
+pushd $ROOTFS
+XZ_OPT="-9 -T 0" tar --owner=0 --group=0 --xattrs --acls -Jcf /tmp/archlinux-$date.tar.xz *
+popd
+
 rm -rf $ROOTFS
 
 
-date=`date +'%Y-%m-%d'`
-docker run --name base_archlinux $DOCKER_IMAGE_NAME bash
-docker export -o archlinux-$date.tar base_archlinux
-docker rm -f base_archlinux
-xz -z archlinux-$date.tar
