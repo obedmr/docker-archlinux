@@ -85,7 +85,7 @@ expect <<EOF
 	}
 	set timeout $EXPECT_TIMEOUT
 
-	spawn pacstrap -C $PACMAN_CONF -c -d -G -i $ROOTFS base haveged git emacs-nox yaourt $PACMAN_EXTRA_PKGS --ignore $PKGIGNORE
+	spawn pacstrap -C $PACMAN_CONF -c -d -G -i $ROOTFS base haveged git emacs-nox $PACMAN_EXTRA_PKGS --ignore $PKGIGNORE
 	expect {
 		-exact "anyway? \[Y/n\] " { send -- "n\r"; exp_continue }
 		-exact "(default=all): " { send -- "\r"; exp_continue }
@@ -118,11 +118,7 @@ mknod -m 600 $DEV/initctl p
 mknod -m 666 $DEV/ptmx c 5 2
 ln -sf /proc/self/fd $DEV/fd
 
-date=`date +'%Y-%m-%d'`
-pushd $ROOTFS
-XZ_OPT="-9 -T 0" tar --owner=0 --group=0 --xattrs --acls -Jcf /tmp/archlinux-$date.tar.xz *
-popd
-
+DOCKER_IMAGE_NAME=obedmr/archlinux
+tar --numeric-owner --xattrs --acls -C $ROOTFS -c . | docker import - $DOCKER_IMAGE_NAME
+docker run --rm -t $DOCKER_IMAGE_NAME echo Success.
 rm -rf $ROOTFS
-
-
