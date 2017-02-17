@@ -85,7 +85,7 @@ expect <<EOF
 	}
 	set timeout $EXPECT_TIMEOUT
 
-	spawn pacstrap -C $PACMAN_CONF -c -d -G -i $ROOTFS base haveged git emacs-nox $PACMAN_EXTRA_PKGS --ignore $PKGIGNORE
+	spawn pacstrap -C $PACMAN_CONF -c -d -G -i $ROOTFS base haveged git emacs-nox yaourt $PACMAN_EXTRA_PKGS --ignore $PKGIGNORE
 	expect {
 		-exact "anyway? \[Y/n\] " { send -- "n\r"; exp_continue }
 		-exact "(default=all): " { send -- "\r"; exp_continue }
